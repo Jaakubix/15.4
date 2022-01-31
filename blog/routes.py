@@ -27,7 +27,7 @@ def create_entry():
        if form.validate_on_submit():
            entry = Entry(
                title=form.title.data,
-               body=form.body.data
+               body=form.body.data,
                is_published=form.is_published.data
            )
            db.session.add(entry)
@@ -68,10 +68,10 @@ def login():
 
 @app.route('/logout/', methods=['GET', 'POST'])
 def logout():
-   if request.method == 'POST':
-       session.clear()
-       flash('You are now logged out.', 'success')
-   return redirect(url_for('index'))
+    if request.method == 'POST':
+        session.clear()
+        flash('You are now logged out.', 'success')
+    return redirect(url_for('index'))
 
 @app.route("/drafts/", methods=['GET'])
 @login_required
@@ -82,13 +82,11 @@ def list_drafts():
 @app.route("/delete-post/<int:entry_id>", methods=["POST"])
 @login_required
 def delete_entry(entry_id):
-   entry = Entry.query.filter_by(id=entry_id).first_or_404()
-   form = EntryForm(obj=entry)
-   errors = None
-   if request.method == 'POST':
-       if form.validate_on_submit():
-           form.delete(entry)
-           db.session.commit()
-       else:
-           errors = form.errors
-   return render_template("entry_form.html", form=form, errors=errors)
+    entry = Entry.query.filter_by(id=entry_id).first_or_404()
+    errors = None
+    if request.method == 'POST':
+        entry.delete()
+        db.session.commit()
+    else:
+        errors = "nie usunieto"
+    return render_template("entry_form.html", errors=errors)
